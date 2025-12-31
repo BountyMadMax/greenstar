@@ -1,5 +1,5 @@
 import Database from '@tauri-apps/plugin-sql';
-import { type Tea, type Company, type Country, type City, type Saved, type Unsaved, isSaved, isTea, isSavedTeaArray, isDatabaseTea, isCountry, isCity, isCompany, isDatabaseTeaArray, type DatabaseTea, type Review, isDatabaseReviewArray, type DatabaseReview } from '$lib/models';
+import { type Tea, type Company, type Country, type City, type Saved, type Unsaved, isSaved, isTea, isSavedTeaArray, isDatabaseTea, isCountry, isCity, isCompany, isDatabaseTeaArray, type DatabaseTea, type Review, isDatabaseReviewArray, type DatabaseReview, isSavedCountryArray } from '$lib/models';
 
 export default {
 	DATABASE: 'greenstar.db',
@@ -60,6 +60,19 @@ export default {
 			return query[0];
 		} else {
 			return null;
+		}
+	},
+
+	async loadCountryByName(name: string, { db, closeDatabase = true, operator = 'eq' }: { db?: Database, closeDatabase?: boolean, operator?: 'eq' | 'matches' } = {}): Promise<Array<Saved<Country>>> {
+		db = db ?? await this.getDatabase();
+
+		let query = operator == 'eq' ? await db.select('SELECT * FROM countries WHERE name = $1', [name]) : await db.select('SELECT * FROM countries WHERE name LIKE $1', [`%${name}%`]);
+
+		if (closeDatabase) db.close();
+		if (isSavedCountryArray(query)) {
+			return query;
+		} else {
+			return [];
 		}
 	},
 

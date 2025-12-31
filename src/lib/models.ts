@@ -142,14 +142,26 @@ export function isCompany(val: unknown): val is Option<Company> {
 		'name' in val && typeof val.name == 'string'
 }
 
+export function isSavedCompanyArray(val: unknown): val is Array<Saved<Company>> {
+	return Array.isArray(val) && val.every(item => isCompany(item) && isSaved(item));
+}
+
 export function isCountry(val: unknown): val is Option<Country> {
 	return typeof val == 'object' && val != null &&
 		'name' in val && typeof val.name == 'string'
 }
 
+export function isSavedCountryArray(val: unknown): val is Array<Saved<Country>> {
+	return Array.isArray(val) && val.every(item => isCountry(item) && isSaved(item));
+}
+
 export function isCity(val: unknown): val is Option<City> {
 	return typeof val == 'object' && val != null &&
 		'name' in val && typeof val.name == 'string'
+}
+
+export function isSavedCityArray(val: unknown): val is Array<Saved<City>> {
+	return Array.isArray(val) && val.every(item => isCity(item) && isSaved(item));
 }
 
 export function isReview(val: unknown): val is Option<Review> {
