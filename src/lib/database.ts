@@ -1,5 +1,5 @@
 import Database from '@tauri-apps/plugin-sql';
-import { type Tea, type Company, type Country, type City, type Saved, type Unsaved, isSaved, isTea, isSavedTeaArray, isDatabaseTea, isCountry, isCity, isCompany, isDatabaseTeaArray, type DatabaseTea, type Review, isDatabaseReviewArray, type DatabaseReview, isSavedCountryArray } from '$lib/models';
+import { type Tea, type Company, type Country, type City, type Saved, type Unsaved, isSaved, isTea, isSavedTeaArray, isDatabaseTea, isCountry, isCity, isCompany, isDatabaseTeaArray, type DatabaseTea, type Review, isDatabaseReviewArray, type DatabaseReview, isSavedCountryArray, isReview } from '$lib/models';
 
 export default {
 	DATABASE: 'greenstar.db',
@@ -136,6 +136,20 @@ export default {
 		}
 	},
 
+	async loadReviewById(id: number, { db, closeDatabase = true }: { db?: Database, closeDatabase?: boolean } = {}): Promise<Saved<Review> | null> {
+		db = db ?? await this.getDatabase();
+
+		let query = await db.select('SELECT * FROM reviews WHERE id = $1', [id]);
+
+		if (closeDatabase) db.close();
+
+		if (Array.isArray(query) && query.length == 1 && isReview(query[0]) && isSaved(query[0])) {
+			return query[0];
+		} else {
+			return null;
+		}
+	},
+
 	async databaseReviewToSavedReview(review: DatabaseReview): Promise<Saved<Review>> {
 		return {
 			id: review.id,
@@ -180,6 +194,28 @@ export default {
 		}
 	},
 
+	async updateTea(tea: Saved<Tea>): Promise<boolean> {
+		const db = await this.getDatabase();
+
+		let query = await db.execute(
+			'UPDATE teas SET name = $2, description = $3, rating = $4, brewing_time_low = $5, brewing_time_high = $6, tea_gram_per_cup = $7, brewing_temperature_low = $8, brewing_temperature_high = $9, price_per_100gram = $10 WHERE id = $1',
+			[tea.id, tea.name, tea.description, tea.rating, tea.brewingTimeLow, tea.brewingTimeHigh, tea.teaGramPerCup, tea.brewingTemperatureLow, tea.brewingTemperatureHigh, tea.pricePer100gram]
+		);
+		db.close();
+
+		return query.rowsAffected == 1;
+	},
+
+	async deleteTea(tea: Saved<Tea>): Promise<boolean> {
+		const db = await this.getDatabase();
+
+		await db.execute('DELETE FROM reviews WHERE tea_id = $1', [tea.id]);
+		let query = await db.execute('DELETE FROM teas WHERE id = $1', [tea.id]);
+		db.close();
+
+		return query.rowsAffected == 1;
+	},
+
 	async createReview(review: Unsaved<Review>): Promise<Saved<Review> | false> {
 		const db = await this.getDatabase();
 
@@ -202,6 +238,27 @@ export default {
 		} else {
 			return false;
 		}
+	},
+
+	async updateReview(review: Saved<Review>): Promise<boolean> {
+		const db = await this.getDatabase();
+
+		let query = await db.execute(
+			'UPDATE reviews SET username = $2, rating = $3, review = $4 WHERE id = $1',
+			[review.id, review.username, review.rating, review.review]
+		);
+		db.close();
+
+		return query.rowsAffected == 1;
+	},
+
+	async deleteReview(review: Saved<Review>): Promise<boolean> {
+		const db = await this.getDatabase();
+
+		let query = await db.execute('DELETE FROM reviews WHERE id = $1', [review.id]);
+		db.close();
+
+		return query.rowsAffected == 1;
 	}
 }
 

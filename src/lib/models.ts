@@ -84,7 +84,7 @@ export interface Tea {
 	brewingTemperatureLow: number | null;
 	brewingTemperatureHigh: number | null;
 	pricePer100gram: number | null;
-	reviews: Review[];
+	reviews: Array<Saved<Review>>;
 }
 
 /**
