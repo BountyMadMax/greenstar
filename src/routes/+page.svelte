@@ -3,6 +3,7 @@
 	import Layout from "../lib/components/Layout.svelte";
 	import { Plus } from "@lucide/svelte";
 	import type { PageProps } from "./$types";
+	import { Navigation } from "@skeletonlabs/skeleton-svelte";
 
 	let { data }: PageProps = $props();
 </script>
@@ -14,13 +15,20 @@
 {/snippet}
 
 {#snippet footer()}
-	<a
-		href="/tea/add"
-		aria-label="add tea"
-		class="p-8 fixed bottom-4 right-4 preset-filled-primary-100-900 hover:preset-filled-primary-200-800 active:preset-filled-primary-200-800 block w-fit rounded-full"
-	>
-		<Plus size={48} />
-	</a>
+	<Navigation layout="bar">
+		<Navigation.Menu class="grid grid-cols-1 gap-2">
+			<Navigation.TriggerAnchor
+				href="/tea/add"
+				class="preset-filled-primary-100-900"
+			>
+				<Plus />
+				<Navigation.TriggerText
+					class="font-bold text-xs"
+					>Add</Navigation.TriggerText
+				>
+			</Navigation.TriggerAnchor>
+		</Navigation.Menu>
+	</Navigation>
 {/snippet}
 
 <Layout {main} {footer} />

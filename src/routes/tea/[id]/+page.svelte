@@ -3,15 +3,19 @@
 	import Layout from "$lib/components/Layout.svelte";
 	import ReviewList from "$lib/components/ReviewList.svelte";
 	import BackButton from "$lib/components/BackButton.svelte";
-	import { RatingGroup } from "@skeletonlabs/skeleton-svelte";
+	import { Navigation, RatingGroup } from "@skeletonlabs/skeleton-svelte";
 	import {
 		Coffee,
 		Euro,
+		List,
+		Save,
 		Star,
 		StarHalf,
 		Thermometer,
 		Timer,
+		X,
 	} from "@lucide/svelte";
+	import Badge from "$lib/components/Badge.svelte";
 
 	let { data }: PageProps = $props();
 
@@ -20,6 +24,14 @@
 	$effect(() => {
 		tea = data.tea;
 	});
+
+	let createReview = $state(false);
+
+	function submitReviewForm(): void {
+		const form = document.getElementById("review-form");
+
+		if (form instanceof HTMLFormElement) form.requestSubmit();
+	}
 </script>
 
 {#snippet main()}
@@ -86,87 +98,90 @@
 			</div>
 
 			<div class="flex gap-4 items-center flex-wrap">
-				<div class="flex">
-					<div
-						class="flex gap-2 p-2 rounded-s preset-filled-surface-100-900"
-					>
-						<span> <Timer /> </span>
-						<span class="flex gap-2">
-							<span
-								>{tea.brewingTimeLow}</span
-							>
-							<span>-</span>
-							<span
-								>{tea.brewingTimeHigh}</span
-							>
-						</span>
-					</div>
-					<div
-						class="p-2 rounded-e preset-filled-surface-50-950"
-					>
-						Minutes
-					</div>
-				</div>
-				<div class="flex">
-					<div
-						class="flex gap-2 p-2 rounded-s preset-filled-surface-100-900"
-					>
-						<span> <Thermometer /> </span>
-						<span class="flex gap-2">
-							<span
-								>{tea.brewingTemperatureLow}</span
-							>
-							<span>-</span>
-							<span
-								>{tea.brewingTemperatureHigh}</span
-							>
-						</span>
-					</div>
-					<div
-						class="p-2 rounded-e preset-filled-surface-50-950"
-					>
-						<span>°C</span>
-					</div>
-				</div>
-
-				<div class="flex">
-					<div
-						class="flex gap-2 p-2 rounded-s preset-filled-surface-100-900"
-					>
-						<span> <Coffee /> </span>
-						<span>{tea.teaGramPerCup}</span>
-					</div>
-					<div
-						class="p-2 rounded-e preset-filled-surface-50-950"
-					>
-						<span>Gram</span>
-					</div>
-				</div>
-				<div class="flex">
-					<div
-						class="flex gap-2 p-2 rounded-s preset-filled-surface-100-900"
-					>
-						<span class="flex items-center"
-							>{tea.pricePer100gram}
-							<Euro size={16} /></span
-						>
-					</div>
-					<div
-						class="p-2 rounded-e preset-filled-surface-50-950"
-					>
-						<span>100 gr.</span>
-					</div>
-				</div>
+				<Badge
+					valueFirst={tea.brewingTimeLow}
+					valueSecond={tea.brewingTimeHigh}
+					icon={Timer}
+					unit="Minutes"
+				/>
+				<Badge
+					valueFirst={tea.brewingTemperatureLow}
+					valueSecond={tea.brewingTemperatureHigh}
+					icon={Thermometer}
+					unit="°C"
+				/>
+				<Badge
+					valueFirst={tea.teaGramPerCup}
+					icon={Coffee}
+					unit="Gram"
+				/>
+				<Badge
+					valueFirst={tea.pricePer100gram}
+					icon={Euro}
+					unit="100 gr."
+				/>
 			</div>
 		</div>
 		<div>
-			<ReviewList bind:tea />
+			<ReviewList
+				bind:tea
+				bind:createReview
+				formId="review-form"
+			/>
 		</div>
 	</div>
 {/snippet}
 
 {#snippet footer()}
-	<BackButton />
+	<Navigation layout="bar">
+		<Navigation.Menu class="grid grid-cols-2 gap-2">
+			{#if createReview}
+				<Navigation.Trigger
+					class="preset-filled-warning-100-900"
+					onclick={() => (createReview = false)}
+				>
+					<X />
+					<Navigation.TriggerText
+						class="font-bold text-xs"
+					>
+						Cancel
+					</Navigation.TriggerText>
+				</Navigation.Trigger>
+				<Navigation.Trigger
+					class="preset-filled-primary-100-900"
+					onclick={submitReviewForm}
+				>
+					<Save />
+					<Navigation.TriggerText
+						class="font-bold text-xs"
+					>
+						Save
+					</Navigation.TriggerText>
+				</Navigation.Trigger>
+			{:else}
+				<Navigation.TriggerAnchor
+					href="/"
+					class="preset-filled-surface-100-900"
+				>
+					<List />
+					<Navigation.TriggerText
+						class="font-bold text-xs"
+						>List</Navigation.TriggerText
+					>
+				</Navigation.TriggerAnchor>
+				<Navigation.Trigger
+					class="preset-filled-primary-100-900"
+					onclick={() => (createReview = true)}
+				>
+					<Star />
+					<Navigation.TriggerText
+						class="font-bold text-xs"
+						>Create</Navigation.TriggerText
+					>
+				</Navigation.Trigger>
+			{/if}
+		</Navigation.Menu>
+	</Navigation>
 {/snippet}
 
 <Layout {main} {footer} />

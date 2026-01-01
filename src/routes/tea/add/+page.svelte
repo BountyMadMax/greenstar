@@ -1,11 +1,12 @@
 <script lang="ts">
 	import Layout from "$lib/components/Layout.svelte";
 	import BackButton from "$lib/components/BackButton.svelte";
-	import { Euro } from "@lucide/svelte";
+	import { Cross, Euro, Save, X } from "@lucide/svelte";
 	import db from "$lib/database";
 	import type { Tea, Unsaved } from "$lib/models";
 	import { goto } from "$app/navigation";
 	import TeaForm from "$lib/components/TeaForm.svelte";
+	import { Navigation } from "@skeletonlabs/skeleton-svelte";
 
 	let tea: Unsaved<Tea> = $state({
 		name: "",
@@ -112,26 +113,47 @@
 			}
 		}
 	}
+
+	function submitForm(): void {
+		const form = document.getElementById("tea-form");
+
+		if (form instanceof HTMLFormElement) form.requestSubmit();
+	}
 </script>
 
 {#snippet main()}
 	<div class="grid gap-4 w-fit mx-auto py-4">
 		<h1 class="h4">Add tea</h1>
 
-		{#snippet actions()}
-			<button
-				type="submit"
-				class="btn preset-filled-primary-500 hover:preset-filled-primary-600-400 active:preset-filled-primary-600-400 btn-lg"
-				>Add</button
-			>
-		{/snippet}
-
-		<TeaForm bind:tea {actions} {handleSubmit} />
+		<TeaForm bind:tea {handleSubmit} id="tea-form" />
 	</div>
 {/snippet}
 
 {#snippet footer()}
-	<BackButton />
+	<Navigation layout="bar">
+		<Navigation.Menu class="grid grid-cols-2 gap-2">
+			<Navigation.TriggerAnchor
+				href="/"
+				class="preset-filled-warning-100-900"
+			>
+				<X />
+				<Navigation.TriggerText
+					class="font-bold text-xs"
+					>Cancel</Navigation.TriggerText
+				>
+			</Navigation.TriggerAnchor>
+			<Navigation.Trigger
+				class="preset-filled-primary-100-900"
+				onclick={submitForm}
+			>
+				<Save />
+				<Navigation.TriggerText
+					class="font-bold text-xs"
+					>Save</Navigation.TriggerText
+				>
+			</Navigation.Trigger>
+		</Navigation.Menu>
+	</Navigation>
 {/snippet}
 
 <Layout {main} {footer} />

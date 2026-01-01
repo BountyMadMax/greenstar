@@ -13,10 +13,12 @@
 		tea = $bindable(),
 		actions,
 		handleSubmit,
+		id,
 	}: {
 		tea: Option<Tea>;
-		actions: Snippet;
+		actions?: Snippet;
 		handleSubmit: (event: SubmitEvent) => void;
+		id?: string;
 	} = $props();
 
 	function handleBrewingTemperatureLowChange() {
@@ -43,7 +45,7 @@
 	let countryOfOrigin = $derived(tea.countryOfOrigin?.name || "");
 </script>
 
-<form class="grid gap-4 w-fit" onsubmit={handleSubmit}>
+<form class="grid gap-4 w-fit" onsubmit={handleSubmit} {id}>
 	<fieldset>
 		<label class="label">
 			<span class="label-text">Name</span>
@@ -232,7 +234,9 @@
 			</div>
 		</label>
 	</fieldset>
-	<div class="flex align-middle justify-end">
-		{@render actions()}
-	</div>
+	{#if actions}
+		<div class="flex align-middle justify-end">
+			{@render actions()}
+		</div>
+	{/if}
 </form>

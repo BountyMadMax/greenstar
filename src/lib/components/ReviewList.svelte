@@ -7,11 +7,17 @@
 
 	let {
 		tea = $bindable(),
+		createReview = $bindable(),
+		showCreateBtn = false,
+		showSaveBtn = false,
+		formId,
 	}: {
 		tea: Saved<Tea>;
+		createReview?: boolean;
+		showCreateBtn?: boolean;
+		showSaveBtn?: boolean;
+		formId?: string;
 	} = $props();
-
-	let createReview = $state(false);
 
 	async function handleCreateReview(event: SubmitEvent) {
 		event.preventDefault();
@@ -110,6 +116,7 @@
 		{#if createReview}
 			<form
 				class="grid gap-4 w-fit"
+				id={formId}
 				onsubmit={handleCreateReview}
 			>
 				<fieldset class="flex gap-4">
@@ -190,16 +197,20 @@
 						></textarea>
 					</label>
 				</fieldset>
-				<div class="flex align-middle justify-end">
-					<button
-						type="submit"
-						class="btn preset-filled-primary-500 hover:preset-filled-primary-600-400 active:preset-filled-primary-600-400 btn-lg"
+				{#if showSaveBtn}
+					<div
+						class="flex align-middle justify-end"
 					>
-						Create
-					</button>
-				</div>
+						<button
+							type="submit"
+							class="btn preset-filled-primary-500 hover:preset-filled-primary-600-400 active:preset-filled-primary-600-400 btn-lg"
+						>
+							Create
+						</button>
+					</div>
+				{/if}
 			</form>
-		{:else}
+		{:else if showCreateBtn}
 			<div class="flex justify-end">
 				<button
 					onclick={() => {
