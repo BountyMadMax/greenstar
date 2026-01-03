@@ -95,11 +95,6 @@
 						icon={Coffee}
 						unit="Gram"
 					/>
-					<Badge
-						valueFirst={tea.pricePer100gram}
-						icon={Euro}
-						unit="100 gr."
-					/>
 				</div>
 			</a>
 		</li>
