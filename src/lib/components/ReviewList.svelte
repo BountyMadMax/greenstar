@@ -198,7 +198,6 @@
 	<ul>
 		{#each tea.reviews as review, index}
 			<li id="review-{index}">
-				{editReview}
 				{#if typeof editReview == "number" && editReview === index}
 					{@render reviewForm(
 						handleEditReview,
@@ -243,7 +242,7 @@
 								/>
 							</RatingGroup>
 						</div>
-						<div>
+						<div class="text-start">
 							<p>{review.review}</p>
 						</div>
 						<div
