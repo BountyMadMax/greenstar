@@ -9,6 +9,7 @@
 		RatingGroup,
 	} from "@skeletonlabs/skeleton-svelte";
 	import {
+		Building2,
 		Coffee,
 		Euro,
 		List,
@@ -210,28 +211,32 @@
 					{tea.description}
 				</p>
 
-				<div>
-					<div>
-						<span
-							>{tea.countryOfOrigin
-								?.name}</span
-						>
-						<span
-							>{tea.cityOfOrigin
-								?.name}</span
-						>
-					</div>
-
-					<div>
-						<span
-							>{tea.productionCompany
-								?.name}</span
-						>
-						<span
-							>{tea.buyCompany
-								?.name}</span
-						>
-					</div>
+				<div class="flex gap-4 items-center flex-wrap">
+					<Badge
+						valueFirst={tea.countryOfOrigin
+							?.name || null}
+						unit="Country"
+					/>
+					<Badge
+						valueFirst={tea.cityOfOrigin
+							?.name || null}
+						unit="City"
+					/>
+				</div>
+				<div class="flex gap-4 items-center flex-wrap">
+					<Badge
+						valueFirst={tea
+							.productionCompany
+							?.name || null}
+						icon={Building2}
+						unit="Production"
+					/>
+					<Badge
+						valueFirst={tea.buyCompany
+							?.name || null}
+						icon={Building2}
+						unit="Buy"
+					/>
 				</div>
 
 				<div class="flex gap-4 items-center flex-wrap">
@@ -247,6 +252,8 @@
 						icon={Thermometer}
 						unit="°C"
 					/>
+				</div>
+				<div class="flex gap-4 items-center flex-wrap">
 					<Badge
 						valueFirst={tea.teaGramPerCup}
 						icon={Coffee}
