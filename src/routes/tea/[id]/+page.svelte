@@ -144,7 +144,7 @@
 
 		showConfirmDeleteTeaDialog = false;
 
-		if (teaDeleted) goto("/");
+		if (teaDeleted) goto("/", { replaceState: true });
 	}
 </script>
 
