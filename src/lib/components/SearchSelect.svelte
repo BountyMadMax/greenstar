@@ -7,10 +7,11 @@
 		Saved,
 	} from "$lib/models";
 	import {
-		Listbox,
+		Combobox,
+		Portal,
 		useListCollection,
+		type ComboboxRootProps,
 	} from "@skeletonlabs/skeleton-svelte";
-	import type { SelectionDetails } from "@zag-js/listbox";
 	import db from "$lib/database";
 
 	type ModelMap = {
@@ -21,16 +22,19 @@
 
 	let {
 		name,
+		label,
 		modelType,
 		value = $bindable(),
 	}: {
 		name: string;
+		label: string;
 		modelType: keyof ModelMap;
 		value: string | null;
 	} = $props();
 
-	let hasFocus = $state(false);
-	let queryResults: Array<Saved<ModelMap[typeof modelType]>> = $state([]);
+	let queryResults: Array<Option<ModelMap[typeof modelType]>> = $state(
+		[],
+	);
 	let collection = $derived(
 		useListCollection({
 			items: queryResults,
@@ -39,63 +43,70 @@
 		}),
 	);
 
-	async function search() {
+	function search(): Promise<Array<Saved<Country | City | Company>>> {
 		if (modelType == "Country") {
-			queryResults = await db.loadCountryByName(value || "", {
+			return db.loadCountryByName(value || "", {
 				operator: "matches",
 			});
+		} else if (modelType == "City") {
+			return db.loadCityByName(value || "", {
+				operator: "matches",
+			});
+		} else if (modelType == "Company") {
+			return db.loadCompanyByName(value || "", {
+				operator: "matches",
+			});
+		} else {
+			return new Promise((r) => r([]));
 		}
 	}
 
-	function onValueSelect(details: SelectionDetails) {
-		value = details.value;
-	}
+	const onOpenChange = async () => {
+		queryResults = await search();
+	};
 
-	function handleBlur(event: FocusEvent) {
-		const currentTarget = event.currentTarget as HTMLElement;
-
-		if (
-			!currentTarget.parentElement ||
-			!currentTarget.parentElement.contains(
-				event.relatedTarget as Node,
+	const onInputValueChange: ComboboxRootProps["onInputValueChange"] =
+		async (event) => {
+			value = event.inputValue;
+			queryResults = await search();
+			if (
+				!queryResults.some(
+					(result) => result.name == value,
+				)
 			)
-		) {
-			hasFocus = false;
-		}
-	}
+				queryResults.push({ name: event.inputValue });
+		};
 </script>
 
-<div class="grid relative">
-	<input
-		{name}
-		bind:value
-		oninput={search}
-		onblur={handleBlur}
-		onfocusin={() => (hasFocus = true)}
-		class="input preset-filled-surface-100-900 w-fit"
-		size="20"
-		type="text"
-	/>
-
-	{#if queryResults.length > 0 && hasFocus}
-		<Listbox
-			class="w-full absolute top-8 z-10"
-			{collection}
-			onblur={handleBlur}
-			value={value ? [value] : undefined}
-			onSelect={onValueSelect}
-			loopFocus={true}
-		>
-			<Listbox.Content>
-				{#each collection.items as item (item.id)}
-					<Listbox.Item {item}>
-						<Listbox.ItemText
-							>{item.name}</Listbox.ItemText
+<Combobox
+	class="max-w-md"
+	{collection}
+	{onOpenChange}
+	{onInputValueChange}
+	defaultInputValue={value || undefined}
+	{name}
+	multiple={false}
+	closeOnSelect={true}
+	inputBehavior="autohighlight"
+>
+	<Combobox.Label>{label}</Combobox.Label>
+	<Combobox.Control>
+		<Combobox.Input class="preset-filled-surface-100-900" />
+		<Combobox.Trigger />
+	</Combobox.Control>
+	<Combobox.ClearTrigger>Clear</Combobox.ClearTrigger>
+	<Portal>
+		<Combobox.Positioner>
+			<Combobox.Content>
+				{#each queryResults as item (item.id)}
+					<Combobox.Item {item}>
+						<Combobox.ItemText
+							>{item.name}</Combobox.ItemText
 						>
-						<Listbox.ItemIndicator />
-					</Listbox.Item>
+						<Combobox.ItemIndicator />
+					</Combobox.Item>
 				{/each}
-			</Listbox.Content>
-		</Listbox>
-	{/if}
-</div>
+			</Combobox.Content>
+		</Combobox.Positioner>
+	</Portal>
+</Combobox>
