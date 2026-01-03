@@ -23,7 +23,9 @@
 </script>
 
 <div class="flex">
-	<div class="flex gap-2 p-2 rounded-s preset-filled-surface-100-900">
+	<div
+		class="flex gap-2 p-2 rounded-s preset-filled-surface-100-900 border-2 border-surface-950"
+	>
 		{#if props.values === undefined}
 			{@const Icon = props.icon}
 			<span>
@@ -47,7 +49,9 @@
 		{/if}
 	</div>
 
-	<div class="p-2 rounded-e preset-filled-surface-50-950">
+	<div
+		class="p-2 rounded-e preset-filled-surface-50-950 flex items-center"
+	>
 		{#if typeof props.unit == "string"}
 			{props.unit}
 		{:else}

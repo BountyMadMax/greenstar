@@ -1,6 +1,5 @@
 <script lang="ts">
 	import Layout from "$lib/components/Layout.svelte";
-	import BackButton from "$lib/components/BackButton.svelte";
 	import { Cross, Euro, Save, X } from "@lucide/svelte";
 	import db from "$lib/database";
 	import type { Tea, Unsaved } from "$lib/models";

@@ -22,9 +22,11 @@
 				? 'mt-2'
 				: ''}"
 		>
-			<a href={`/tea/${tea.id}`} class="p-4 grid gap-2">
+			<a href={`/tea/${tea.id}`} class="p-4 grid gap-4">
 				<div class="flex items-center">
-					<h4 class="h4 mr-auto">{tea.name}</h4>
+					<h3 class="h3 mr-auto font-bold">
+						{tea.name}
+					</h3>
 
 					<RatingGroup
 						count={5}

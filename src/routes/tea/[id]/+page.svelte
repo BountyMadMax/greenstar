@@ -2,7 +2,6 @@
 	import type { PageProps } from "./$types";
 	import Layout from "$lib/components/Layout.svelte";
 	import ReviewList from "$lib/components/ReviewList.svelte";
-	import BackButton from "$lib/components/BackButton.svelte";
 	import {
 		Dialog,
 		Navigation,

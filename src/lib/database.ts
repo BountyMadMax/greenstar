@@ -1,5 +1,5 @@
 import Database from '@tauri-apps/plugin-sql';
-import { type Tea, type Company, type Country, type City, type Saved, type Unsaved, isSaved, isTea, isSavedTeaArray, isDatabaseTea, isCountry, isCity, isCompany, isDatabaseTeaArray, type DatabaseTea, type Review, isDatabaseReviewArray, type DatabaseReview, isSavedCountryArray, isReview } from '$lib/models';
+import { type Tea, type Company, type Country, type City, type Saved, type Unsaved, isSaved, isDatabaseTea, isCountry, isCity, isCompany, isDatabaseTeaArray, type DatabaseTea, type Review, isDatabaseReviewArray, type DatabaseReview, isSavedCountryArray, isReview, isSavedCityArray, isSavedCompanyArray } from '$lib/models';
 
 export default {
 	DATABASE: 'greenstar.db',
@@ -63,10 +63,10 @@ export default {
 		}
 	},
 
-	async loadCountryByName(name: string, { db, closeDatabase = true, operator = 'eq' }: { db?: Database, closeDatabase?: boolean, operator?: 'eq' | 'matches' } = {}): Promise<Array<Saved<Country>>> {
+	async loadCountryByName(name: string, { db, closeDatabase = true, operator = 'eq', limit = 10 }: { db?: Database, closeDatabase?: boolean, operator?: 'eq' | 'matches', limit?: number } = {}): Promise<Array<Saved<Country>>> {
 		db = db ?? await this.getDatabase();
 
-		let query = operator == 'eq' ? await db.select('SELECT * FROM countries WHERE name = $1', [name]) : await db.select('SELECT * FROM countries WHERE name LIKE $1', [`%${name}%`]);
+		let query = operator == 'eq' ? await db.select('SELECT * FROM countries WHERE name = $1 LIMIT $2', [name, limit]) : await db.select('SELECT * FROM countries WHERE name LIKE $1 LIMIT $2', [`%${name}%`, limit]);
 
 		if (closeDatabase) db.close();
 		if (isSavedCountryArray(query)) {
@@ -89,6 +89,19 @@ export default {
 		}
 	},
 
+	async loadCityByName(name: string, { db, closeDatabase = true, operator = 'eq', limit = 10 }: { db?: Database, closeDatabase?: boolean, operator?: 'eq' | 'matches', limit?: number } = {}): Promise<Array<Saved<City>>> {
+		db = db ?? await this.getDatabase();
+
+		let query = operator == 'eq' ? await db.select('SELECT * FROM cities WHERE name = $1 LIMIT $2', [name, limit]) : await db.select('SELECT * FROM cities WHERE name LIKE $1 LIMIT $2', [`%${name}%`, limit]);
+
+		if (closeDatabase) db.close();
+		if (isSavedCityArray(query)) {
+			return query;
+		} else {
+			return [];
+		}
+	},
+
 	async loadCompanyById(id: number, { db, closeDatabase = true }: { db?: Database, closeDatabase?: boolean } = {}): Promise<Saved<Company> | null> {
 		db = db ?? await this.getDatabase();
 
@@ -102,16 +115,26 @@ export default {
 		}
 	},
 
+	async loadCompanyByName(name: string, { db, closeDatabase = true, operator = 'eq', limit = 10 }: { db?: Database, closeDatabase?: boolean, operator?: 'eq' | 'matches', limit?: number } = {}): Promise<Array<Saved<Company>>> {
+		db = db ?? await this.getDatabase();
+
+		let query = operator == 'eq' ? await db.select('SELECT * FROM companies WHERE name = $1 LIMIT $2', [name, limit]) : await db.select('SELECT * FROM companies WHERE name LIKE $1 LIMIT $2', [`%${name}%`, limit]);
+
+		if (closeDatabase) db.close();
+		if (isSavedCompanyArray(query)) {
+			return query;
+		} else {
+			return [];
+		}
+	},
+
 	/**
 	 * Loads all the tea.
 	 */
 	async loadTea(): Promise<Array<Saved<Tea>>> {
 		const db = await this.getDatabase();
 
-		let query = await db.select(
-			'SELECT * FROM teas',
-		);
-
+		let query = await db.select('SELECT * FROM teas ORDER BY rating DESC');
 
 		if (isDatabaseTeaArray(query)) {
 			const tea = await Promise.all(query.map((tea) => this.databaseTeaToSavedTea(tea, { db })));
