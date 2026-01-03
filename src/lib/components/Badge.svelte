@@ -11,7 +11,7 @@
 				defaultValue?: string;
 		  }
 		| {
-				icon: typeof Icon;
+				icon?: typeof Icon;
 				valueFirst: string | number | null;
 				valueSecond?: string | number | null;
 				unit: string;
@@ -27,10 +27,12 @@
 		class="flex gap-2 p-2 rounded-s preset-filled-surface-100-900 border-2 border-surface-950"
 	>
 		{#if props.values === undefined}
-			{@const Icon = props.icon}
-			<span>
-				<Icon />
-			</span>
+			{#if props.icon}
+				{@const Icon = props.icon}
+				<span>
+					<Icon />
+				</span>
+			{/if}
 			<span class="flex gap-2">
 				<span>
 					{props.valueFirst ?? defaultValue}
