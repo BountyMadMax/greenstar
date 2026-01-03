@@ -26,14 +26,11 @@
 	import TeaForm from "$lib/components/TeaForm.svelte";
 	import db from "$lib/database.svelte";
 	import { goto } from "$app/navigation";
+	import { calcRating } from "$lib/helper";
 
 	let { data }: PageProps = $props();
 
 	let tea = $derived(data.tea);
-
-	$effect(() => {
-		tea = data.tea;
-	});
 
 	let createReview = $state(false);
 	let editReview: false | number = $state(false);
@@ -65,13 +62,17 @@
 				tea.reviews[editReview],
 			);
 
-			if (reviewDeleted)
+			if (reviewDeleted) {
 				tea.reviews = await db.loadReviewsByTeaId(
 					tea.id,
 				);
+
+				tea.rating = calcRating(tea.reviews);
+			}
 		}
 
 		showConfirmDeleteReviewDialog = false;
+		editReview = false;
 	}
 
 	function submitTeaForm(): void {

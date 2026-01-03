@@ -309,8 +309,8 @@ export default {
 		}
 
 		let query = await db.execute(
-			'INSERT into teas (name, description, rating, brewing_time_low, brewing_time_high, tea_gram_per_cup, brewing_temperature_low, brewing_temperature_high, price_per_100gram, country_of_origin_id, city_of_origin_id, production_company_id, buy_company_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)',
-			[tea.name, tea.description, tea.rating, tea.brewingTimeLow, tea.brewingTimeHigh, tea.teaGramPerCup, tea.brewingTemperatureLow, tea.brewingTemperatureHigh, tea.pricePer100gram, tea.countryOfOrigin?.id, tea.cityOfOrigin?.id, tea.productionCompany?.id, tea.buyCompany?.id]
+			'UPDATE teas SET name = $1, description = $2, rating = $3, brewing_time_low = $4, brewing_time_high = $5, tea_gram_per_cup = $6, brewing_temperature_low = $7, brewing_temperature_high = $8, price_per_100gram = $9, country_of_origin_id = $10, city_of_origin_id = $11, production_company_id = $12, buy_company_id = $13  WHERE id = $14',
+			[tea.name, tea.description, tea.rating, tea.brewingTimeLow, tea.brewingTimeHigh, tea.teaGramPerCup, tea.brewingTemperatureLow, tea.brewingTemperatureHigh, tea.pricePer100gram, tea.countryOfOrigin?.id, tea.cityOfOrigin?.id, tea.productionCompany?.id, tea.buyCompany?.id, tea.id]
 		);
 		db.close();
 
