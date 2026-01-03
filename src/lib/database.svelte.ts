@@ -20,7 +20,7 @@ export default {
 		);
 
 		if (Array.isArray(query) && query.length == 1 && isDatabaseTea(query[0])) {
-			const tea = await this.databaseTeaToSavedTea(query[0]);
+			const tea = $state(await this.databaseTeaToSavedTea(query[0]));
 
 			if (closeDatabase) db.close();
 			return tea;
@@ -291,9 +291,26 @@ export default {
 	async updateTea(tea: Saved<Tea>): Promise<boolean> {
 		const db = await this.getDatabase();
 
+		if (tea.countryOfOrigin && isUnsaved(tea.countryOfOrigin)) {
+			const savedCountryOfOrigin = await this.createCountry(tea.countryOfOrigin, { db, closeDatabase: false });
+			if (savedCountryOfOrigin) tea.countryOfOrigin = savedCountryOfOrigin;
+		}
+		if (tea.cityOfOrigin && isUnsaved(tea.cityOfOrigin)) {
+			const savedCityOfOrigin = await this.createCity(tea.cityOfOrigin, { db, closeDatabase: false });
+			if (savedCityOfOrigin) tea.cityOfOrigin = savedCityOfOrigin;
+		}
+		if (tea.productionCompany && isUnsaved(tea.productionCompany)) {
+			const savedProductionCompany = await this.createCompany(tea.productionCompany, { db, closeDatabase: false });
+			if (savedProductionCompany) tea.productionCompany = savedProductionCompany;
+		}
+		if (tea.buyCompany && isUnsaved(tea.buyCompany)) {
+			const savedBuyCompany = await this.createCompany(tea.buyCompany, { db, closeDatabase: false });
+			if (savedBuyCompany) tea.buyCompany = savedBuyCompany;
+		}
+
 		let query = await db.execute(
-			'UPDATE teas SET name = $2, description = $3, rating = $4, brewing_time_low = $5, brewing_time_high = $6, tea_gram_per_cup = $7, brewing_temperature_low = $8, brewing_temperature_high = $9, price_per_100gram = $10 WHERE id = $1',
-			[tea.id, tea.name, tea.description, tea.rating, tea.brewingTimeLow, tea.brewingTimeHigh, tea.teaGramPerCup, tea.brewingTemperatureLow, tea.brewingTemperatureHigh, tea.pricePer100gram]
+			'INSERT into teas (name, description, rating, brewing_time_low, brewing_time_high, tea_gram_per_cup, brewing_temperature_low, brewing_temperature_high, price_per_100gram, country_of_origin_id, city_of_origin_id, production_company_id, buy_company_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)',
+			[tea.name, tea.description, tea.rating, tea.brewingTimeLow, tea.brewingTimeHigh, tea.teaGramPerCup, tea.brewingTemperatureLow, tea.brewingTemperatureHigh, tea.pricePer100gram, tea.countryOfOrigin?.id, tea.cityOfOrigin?.id, tea.productionCompany?.id, tea.buyCompany?.id]
 		);
 		db.close();
 

@@ -23,12 +23,12 @@
 	} from "@lucide/svelte";
 	import Badge from "$lib/components/Badge.svelte";
 	import TeaForm from "$lib/components/TeaForm.svelte";
-	import db from "$lib/database";
+	import db from "$lib/database.svelte";
 	import { goto } from "$app/navigation";
 
 	let { data }: PageProps = $props();
 
-	let tea = $state(data.tea);
+	let tea = $derived(data.tea);
 
 	$effect(() => {
 		tea = data.tea;
@@ -42,7 +42,6 @@
 
 	function submitReviewForm(): void {
 		const form = document.getElementById("review-form");
-		console.log("submit", form);
 
 		if (form instanceof HTMLFormElement) form.requestSubmit();
 	}
@@ -80,7 +79,52 @@
 		if (form instanceof HTMLFormElement) form.requestSubmit();
 	}
 
-	async function handleUpdateTea(): Promise<void> {
+	async function handleUpdateTea(event: SubmitEvent): Promise<void> {
+		event.preventDefault();
+
+		if (event.target instanceof HTMLFormElement) {
+			const formData = new FormData(
+				event.target,
+				event.submitter,
+			);
+
+			const countryOfOriginValue =
+				formData.get("country_of_origin");
+			tea.countryOfOrigin = countryOfOriginValue
+				? (
+						await db.loadCountryByName(
+							countryOfOriginValue.toString(),
+						)
+					)[0] || { name: countryOfOriginValue }
+				: null;
+			const cityOfOriginValue =
+				formData.get("city_of_origin");
+			tea.cityOfOrigin = cityOfOriginValue
+				? (
+						await db.loadCityByName(
+							cityOfOriginValue.toString(),
+						)
+					)[0] || { name: cityOfOriginValue }
+				: null;
+			const productionCompanyValue =
+				formData.get("production_company");
+			tea.productionCompany = productionCompanyValue
+				? (
+						await db.loadCompanyByName(
+							productionCompanyValue.toString(),
+						)
+					)[0] || { name: productionCompanyValue }
+				: null;
+			const buyCompanyValue = formData.get("buy_company");
+			tea.buyCompany = buyCompanyValue
+				? (
+						await db.loadCompanyByName(
+							buyCompanyValue.toString(),
+						)
+					)[0] || { name: buyCompanyValue }
+				: null;
+		}
+
 		await db.updateTea(tea);
 
 		editTea = false;

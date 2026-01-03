@@ -12,7 +12,7 @@
 		useListCollection,
 		type ComboboxRootProps,
 	} from "@skeletonlabs/skeleton-svelte";
-	import db from "$lib/database";
+	import db from "$lib/database.svelte";
 
 	type ModelMap = {
 		Country: Country;

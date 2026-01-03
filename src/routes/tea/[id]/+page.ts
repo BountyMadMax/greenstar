@@ -1,5 +1,5 @@
 import type { PageLoad } from './$types';
-import db from '$lib/database';
+import db from '$lib/database.svelte';
 import { error } from '@sveltejs/kit';
 
 export const load: PageLoad = async ({ params }) => {

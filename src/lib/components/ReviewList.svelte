@@ -2,7 +2,7 @@
 	import type { Review, Saved, Tea } from "$lib/models";
 	import { Star, StarHalf } from "@lucide/svelte";
 	import { RatingGroup } from "@skeletonlabs/skeleton-svelte";
-	import db from "$lib/database";
+	import db from "$lib/database.svelte";
 	import { calcRating } from "$lib/helper";
 
 	let {

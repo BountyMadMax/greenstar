@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Layout from "$lib/components/Layout.svelte";
 	import { BugPlay, Save, X } from "@lucide/svelte";
-	import db from "$lib/database";
+	import db from "$lib/database.svelte";
 	import type { Tea, Unsaved } from "$lib/models";
 	import { goto } from "$app/navigation";
 	import TeaForm from "$lib/components/TeaForm.svelte";
