@@ -1,13 +1,8 @@
 <script lang="ts">
-	import type { Country, Option, Saved, Tea } from "$lib/models";
+	import type { Option, Tea } from "$lib/models";
 	import { Euro } from "@lucide/svelte";
-	import {
-		Listbox,
-		useListCollection,
-	} from "@skeletonlabs/skeleton-svelte";
 	import type { Snippet } from "svelte";
-	import db from "$lib/database";
-	import SearchSelect from "./SearchSelect.svelte";
+	import SearchSelect from "$lib/components/SearchSelect.svelte";
 
 	const {
 		tea = $bindable(),
@@ -43,6 +38,9 @@
 	}
 
 	let countryOfOrigin = $derived(tea.countryOfOrigin?.name || "");
+	let cityOfOrigin = $derived(tea.cityOfOrigin?.name || "");
+	let productionCompany = $derived(tea.productionCompany?.name || "");
+	let buyCompany = $derived(tea.buyCompany?.name || "");
 </script>
 
 <form class="grid gap-4 w-fit" onsubmit={handleSubmit} {id}>
@@ -74,43 +72,33 @@
 	</fieldset>
 
 	<fieldset class="flex gap-4 w-fit">
-		<label class="label">
-			<span class="label-text">Country of origin</span>
-			<div class="grid relative">
-				<SearchSelect
-					name="country_of_origin"
-					modelType="Country"
-					bind:value={countryOfOrigin}
-				/>
-			</div>
-		</label>
-		<label class="label">
-			<span class="label-text">City of origin</span>
-			<input
-				name="city_of_origin"
-				class="input preset-filled-surface-100-900 w-fit"
-				type="text"
-			/>
-		</label>
+		<SearchSelect
+			name="country_of_origin"
+			label="Country of origin"
+			modelType="Country"
+			bind:value={countryOfOrigin}
+		/>
+		<SearchSelect
+			name="city_of_origin"
+			label="City of origin"
+			modelType="City"
+			bind:value={cityOfOrigin}
+		/>
 	</fieldset>
 
 	<fieldset class="flex gap-4 w-fit">
-		<label class="label">
-			<span class="label-text">Production Company</span>
-			<input
-				name="production_company"
-				class="input preset-filled-surface-100-900 w-fit"
-				type="text"
-			/>
-		</label>
-		<label class="label">
-			<span class="label-text">Buy company</span>
-			<input
-				name="buy_company"
-				class="input preset-filled-surface-100-900 w-fit"
-				type="text"
-			/>
-		</label>
+		<SearchSelect
+			name="production_company"
+			label="Production company"
+			modelType="Company"
+			bind:value={productionCompany}
+		/>
+		<SearchSelect
+			name="buy_company"
+			label="Buy company"
+			modelType="Company"
+			bind:value={buyCompany}
+		/>
 	</fieldset>
 
 	<fieldset class="flex gap-4 w-fit">
