@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Layout from "$lib/components/Layout.svelte";
-	import { Cross, Euro, Save, X } from "@lucide/svelte";
+	import { BugPlay, Save, X } from "@lucide/svelte";
 	import db from "$lib/database";
 	import type { Tea, Unsaved } from "$lib/models";
 	import { goto } from "$app/navigation";
@@ -88,15 +88,41 @@
 						await db.loadCountryByName(
 							countryOfOriginValue.toString(),
 						)
-					)[0] || null
+					)[0] || { name: countryOfOriginValue }
+				: null;
+
+			const cityOfOriginValue =
+				formData.get("city_of_origin");
+			tea.cityOfOrigin = cityOfOriginValue
+				? (
+						await db.loadCityByName(
+							cityOfOriginValue.toString(),
+						)
+					)[0] || { name: cityOfOriginValue }
+				: null;
+
+			const productionCompanyValue =
+				formData.get("production_company");
+			tea.productionCompany = productionCompanyValue
+				? (
+						await db.loadCompanyByName(
+							productionCompanyValue.toString(),
+						)
+					)[0] || { name: productionCompanyValue }
+				: null;
+
+			const buyCompanyValue = formData.get("buy_company");
+			tea.buyCompany = buyCompanyValue
+				? (
+						await db.loadCompanyByName(
+							buyCompanyValue.toString(),
+						)
+					)[0] || { name: buyCompanyValue }
 				: null;
 
 			tea.name = name;
 			tea.description = description;
 			tea.rating = 0;
-			tea.cityOfOrigin = null;
-			tea.productionCompany = null;
-			tea.buyCompany = null;
 			tea.brewingTimeLow = brewingTimeLow;
 			tea.brewingTimeHigh = brewingTimeHigh;
 			tea.brewingTemperatureLow = brewingTemperatureLow;

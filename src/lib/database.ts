@@ -1,5 +1,5 @@
 import Database from '@tauri-apps/plugin-sql';
-import { type Tea, type Company, type Country, type City, type Saved, type Unsaved, isSaved, isDatabaseTea, isCountry, isCity, isCompany, isDatabaseTeaArray, type DatabaseTea, type Review, isDatabaseReviewArray, type DatabaseReview, isSavedCountryArray, isReview, isSavedCityArray, isSavedCompanyArray } from '$lib/models';
+import { type Tea, type Company, type Country, type City, type Saved, type Unsaved, isSaved, isDatabaseTea, isCountry, isCity, isCompany, isDatabaseTeaArray, type DatabaseTea, type Review, isDatabaseReviewArray, type DatabaseReview, isSavedCountryArray, isReview, isSavedCityArray, isSavedCompanyArray, isUnsaved } from '$lib/models';
 
 export default {
 	DATABASE: 'greenstar.db',
@@ -20,7 +20,7 @@ export default {
 		);
 
 		if (Array.isArray(query) && query.length == 1 && isDatabaseTea(query[0])) {
-			const tea = this.databaseTeaToSavedTea(query[0]);
+			const tea = await this.databaseTeaToSavedTea(query[0]);
 
 			if (closeDatabase) db.close();
 			return tea;
@@ -36,7 +36,7 @@ export default {
 			name: tea.name,
 			description: tea.description,
 			rating: tea.rating || 0,
-			countryOfOrigin: tea.country_of_origin_id ? await this.loadCountryById(tea.country_of_origin_id, { db: db, closeDatabase: false }) : null,
+			countryOfOrigin: tea.country_of_origin_id ? await this.loadCountryById(tea.country_of_origin_id, { db, closeDatabase: false }) : null,
 			cityOfOrigin: tea.city_of_origin_id ? await this.loadCityById(tea.city_of_origin_id, { db, closeDatabase: false }) : null,
 			productionCompany: tea.production_company_id ? await this.loadCompanyById(tea.production_company_id, { db, closeDatabase: false }) : null,
 			buyCompany: tea.buy_company_id ? await this.loadCompanyById(tea.buy_company_id, { db, closeDatabase: false }) : null,
@@ -199,9 +199,26 @@ export default {
 	async createTea(tea: Unsaved<Tea>): Promise<Saved<Tea> | false> {
 		const db = await this.getDatabase();
 
+		if (tea.countryOfOrigin && isUnsaved(tea.countryOfOrigin)) {
+			const savedCountryOfOrigin = await this.createCountry(tea.countryOfOrigin, { db, closeDatabase: false });
+			if (savedCountryOfOrigin) tea.countryOfOrigin = savedCountryOfOrigin;
+		}
+		if (tea.cityOfOrigin && isUnsaved(tea.cityOfOrigin)) {
+			const savedCityOfOrigin = await this.createCity(tea.cityOfOrigin, { db, closeDatabase: false });
+			if (savedCityOfOrigin) tea.cityOfOrigin = savedCityOfOrigin;
+		}
+		if (tea.productionCompany && isUnsaved(tea.productionCompany)) {
+			const savedProductionCompany = await this.createCompany(tea.productionCompany, { db, closeDatabase: false });
+			if (savedProductionCompany) tea.productionCompany = savedProductionCompany;
+		}
+		if (tea.buyCompany && isUnsaved(tea.buyCompany)) {
+			const savedBuyCompany = await this.createCompany(tea.buyCompany, { db, closeDatabase: false });
+			if (savedBuyCompany) tea.buyCompany = savedBuyCompany;
+		}
+
 		let query = await db.execute(
-			'INSERT into teas (name, description, rating, brewing_time_low, brewing_time_high, tea_gram_per_cup, brewing_temperature_low, brewing_temperature_high, price_per_100gram) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)',
-			[tea.name, tea.description, tea.rating, tea.brewingTimeLow, tea.brewingTimeHigh, tea.teaGramPerCup, tea.brewingTemperatureLow, tea.brewingTemperatureHigh, tea.pricePer100gram]
+			'INSERT into teas (name, description, rating, brewing_time_low, brewing_time_high, tea_gram_per_cup, brewing_temperature_low, brewing_temperature_high, price_per_100gram, country_of_origin_id, city_of_origin_id, production_company_id, buy_company_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)',
+			[tea.name, tea.description, tea.rating, tea.brewingTimeLow, tea.brewingTimeHigh, tea.teaGramPerCup, tea.brewingTemperatureLow, tea.brewingTemperatureHigh, tea.pricePer100gram, tea.countryOfOrigin?.id, tea.cityOfOrigin?.id, tea.productionCompany?.id, tea.buyCompany?.id]
 		);
 		db.close();
 
@@ -212,6 +229,60 @@ export default {
 			};
 
 			return savedTea;
+		} else {
+			return false;
+		}
+	},
+
+	async createCountry(country: Unsaved<Country>, { db, closeDatabase = true }: { db?: Database, closeDatabase?: boolean } = {}): Promise<Saved<Country> | false> {
+		db = db ?? await this.getDatabase();
+
+		let query = await db.execute('INSERT into countries (name) VALUES ($1)', [country.name]);
+
+		if (closeDatabase) db.close();
+		if (typeof query.lastInsertId == 'number') {
+			const savedCountry: Saved<Country> = {
+				...country,
+				id: query.lastInsertId
+			};
+
+			return savedCountry;
+		} else {
+			return false;
+		}
+	},
+
+	async createCity(city: Unsaved<City>, { db, closeDatabase = true }: { db?: Database, closeDatabase?: boolean } = {}): Promise<Saved<City> | false> {
+		db = db ?? await this.getDatabase();
+
+		let query = await db.execute('INSERT into cities (name) VALUES ($1)', [city.name]);
+
+		if (closeDatabase) db.close();
+		if (typeof query.lastInsertId == 'number') {
+			const savedCity: Saved<City> = {
+				...city,
+				id: query.lastInsertId
+			};
+
+			return savedCity;
+		} else {
+			return false;
+		}
+	},
+
+	async createCompany(company: Unsaved<Company>, { db, closeDatabase = true }: { db?: Database, closeDatabase?: boolean } = {}): Promise<Saved<Company> | false> {
+		db = db ?? await this.getDatabase();
+
+		let query = await db.execute('INSERT into companies (name) VALUES ($1)', [company.name]);
+
+		if (closeDatabase) db.close();
+		if (typeof query.lastInsertId == 'number') {
+			const savedCompany: Saved<Company> = {
+				...company,
+				id: query.lastInsertId
+			};
+
+			return savedCompany;
 		} else {
 			return false;
 		}
