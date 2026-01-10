@@ -43,35 +43,35 @@
 	let buyCompany = $derived(tea.buyCompany?.name || "");
 </script>
 
-<form class="grid gap-4 w-fit" onsubmit={handleSubmit} {id}>
+<form class="grid gap-2 w-fit" onsubmit={handleSubmit} {id}>
 	<fieldset>
-		<label class="label">
+		<label class="label w-fit">
 			<span class="label-text">Name</span>
 			<input
 				name="name"
-				class="input preset-filled-surface-100-900 w-fit"
+				class="input preset-filled-surface-100-900"
 				type="text"
 				bind:value={tea.name}
 				required
-				size="45"
+				size="25"
 			/>
 		</label>
 	</fieldset>
 
 	<fieldset>
-		<label class="label">
+		<label class="label w-fit">
 			<span class="label-text">Description</span>
 			<textarea
 				name="description"
 				class="input preset-filled-surface-100-900 w-fit resize-none"
 				bind:value={tea.description}
-				cols="46"
-				rows="4"
+				cols="26"
+				rows="3"
 			></textarea>
 		</label>
 	</fieldset>
 
-	<fieldset class="flex gap-4 w-fit">
+	<fieldset class="flex gap-2 w-fit flex-wrap">
 		<SearchSelect
 			name="country_of_origin"
 			label="Country of origin"
@@ -86,7 +86,7 @@
 		/>
 	</fieldset>
 
-	<fieldset class="flex gap-4 w-fit">
+	<fieldset class="flex gap-2 w-fit flex-wrap">
 		<SearchSelect
 			name="production_company"
 			label="Production company"
@@ -101,13 +101,13 @@
 		/>
 	</fieldset>
 
-	<fieldset class="flex gap-4 w-fit">
-		<label class="label">
+	<fieldset class="flex gap-2 w-fit flex-wrap">
+		<label class="label w-fit">
 			<span class="label-text">Tea per cup in gram</span>
-			<div class="input-group grid-cols-[1fr_auto]">
+			<div class="input-group grid-cols-[1fr_auto] w-fit">
 				<input
 					name="tea_gram_per_cup"
-					class="ig-input preset-filled-surface-100-900 w-29"
+					class="ig-input preset-filled-surface-100-900 w-20"
 					bind:value={tea.teaGramPerCup}
 					type="number"
 					placeholder="3"
@@ -119,12 +119,12 @@
 				</div>
 			</div>
 		</label>
-		<label class="label">
+		<label class="label w-fit">
 			<span class="label-text">Price per 100 gram</span>
-			<div class="input-group grid-cols-[1fr_auto]">
+			<div class="input-group grid-cols-[1fr_auto] w-fit">
 				<input
 					name="price_per_100gram"
-					class="ig-input preset-filled-surface-100-900 w-33"
+					class="ig-input preset-filled-surface-100-900 w-22"
 					bind:value={tea.pricePer100gram}
 					type="number"
 				/>
@@ -137,13 +137,13 @@
 		</label>
 	</fieldset>
 
-	<fieldset class="flex gap-4 w-fit">
-		<label class="label">
+	<fieldset class="flex gap-2 w-fit flex-wrap">
+		<label class="label w-fit">
 			<span class="label-text">Brewing time low</span>
-			<div class="input-group grid-cols-[1fr_auto]">
+			<div class="input-group grid-cols-[1fr_auto] w-fit">
 				<input
 					name="brewing_time_low"
-					class="ig-input preset-filled-surface-100-900 w-31"
+					class="ig-input preset-filled-surface-100-900 w-20"
 					bind:value={tea.brewingTimeLow}
 					onchange={handleBrewingTimeLowChange}
 					placeholder="2"
@@ -158,13 +158,12 @@
 				</div>
 			</div>
 		</label>
-		<div class="self-center mt-4">-</div>
-		<label class="label">
+		<label class="label w-fit">
 			<span class="label-text">Brewing time high</span>
-			<div class="input-group grid-cols-[1fr_auto]">
+			<div class="input-group grid-cols-[1fr_auto] w-fit">
 				<input
 					name="brewing_time_high"
-					class="ig-input preset-filled-surface-100-900 w-31"
+					class="ig-input preset-filled-surface-100-900 w-20"
 					bind:value={tea.brewingTimeHigh}
 					placeholder="3"
 					min={tea.brewingTimeLow}
@@ -180,13 +179,13 @@
 		</label>
 	</fieldset>
 
-	<fieldset class="flex gap-4 w-fit">
-		<label class="label">
-			<span class="label-text">Brewing temperature low</span>
-			<div class="input-group grid-cols-[1fr_auto]">
+	<fieldset class="flex gap-2 w-fit flex-wrap">
+		<label class="label w-fit">
+			<span class="label-text">Brewing temp low</span>
+			<div class="input-group grid-cols-[1fr_auto] w-fit">
 				<input
 					name="brewing_temperature_low"
-					class="ig-input preset-filled-surface-100-900 w-43"
+					class="ig-input preset-filled-surface-100-900 w-22"
 					bind:value={tea.brewingTemperatureLow}
 					onchange={handleBrewingTemperatureLowChange}
 					placeholder="75"
@@ -201,13 +200,12 @@
 				</div>
 			</div>
 		</label>
-		<div class="self-center mt-4">-</div>
-		<label class="label">
-			<span class="label-text">Brewing temperature high</span>
-			<div class="input-group grid-cols-[1fr_auto]">
+		<label class="label w-fit">
+			<span class="label-text">Brewing temp high</span>
+			<div class="input-group grid-cols-[1fr_auto] w-fit">
 				<input
 					name="brewing_temperature_high"
-					class="ig-input preset-filled-surface-100-900 w-43"
+					class="ig-input preset-filled-surface-100-900 w-22"
 					bind:value={tea.brewingTemperatureHigh}
 					placeholder="85"
 					min={tea.brewingTemperatureLow}
