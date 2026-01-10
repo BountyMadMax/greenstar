@@ -68,6 +68,8 @@
 				);
 
 				tea.rating = calcRating(tea.reviews);
+
+				db.saveTea(tea);
 			}
 		}
 
