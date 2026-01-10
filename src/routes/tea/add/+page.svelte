@@ -147,7 +147,7 @@
 </script>
 
 {#snippet main()}
-	<div class="grid gap-4 w-fit mx-auto py-4">
+	<div class="grid gap-4 w-fit mx-auto py-4 px-2">
 		<h1 class="h4">Add tea</h1>
 
 		<TeaForm bind:tea {handleSubmit} id="tea-form" />

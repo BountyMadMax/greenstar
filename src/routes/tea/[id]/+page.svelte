@@ -151,7 +151,7 @@
 
 {#snippet main()}
 	{#if editTea}
-		<div class="w-fit mx-auto py-4">
+		<div class="w-fit mx-auto py-4 px-2">
 			<TeaForm
 				bind:tea
 				handleSubmit={handleUpdateTea}
